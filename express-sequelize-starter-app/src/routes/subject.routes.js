@@ -4,29 +4,46 @@ const { subjectControllers } = require("../controllers");
 const { apiKeyAuthentication } = require("../middlewares/auth");
 const { subjectValidators } = require("../controllers/validator");
 const validate = require("../middlewares/validator");
+const { asyncHandler } = require("../utils");
 
 router.post(
   "/",
   [apiKeyAuthentication],
   subjectValidators.createValidationRules,
   validate,
-  subjectControllers.create
+  asyncHandler(subjectControllers.create)
 );
 router.put(
   "/update-grade",
   subjectValidators.updateGradeOfStudentValidationRules,
   validate,
   [apiKeyAuthentication],
-  subjectControllers.updateGradeOfStudent
+  asyncHandler(subjectControllers.updateGradeOfStudent)
 );
-router.put("/:id", [apiKeyAuthentication], subjectControllers.update);
-router.delete("/:id", [apiKeyAuthentication], subjectControllers.delete);
-router.get("/search", [apiKeyAuthentication], subjectControllers.searchByName);
+router.put(
+  "/:id",
+  [apiKeyAuthentication],
+  asyncHandler(subjectControllers.update)
+);
+router.delete(
+  "/:id",
+  [apiKeyAuthentication],
+  asyncHandler(subjectControllers.delete)
+);
+router.get(
+  "/search",
+  [apiKeyAuthentication],
+  asyncHandler(subjectControllers.searchByName)
+);
 router.get(
   "/count-student",
   [apiKeyAuthentication],
-  subjectControllers.countStudentBySubject
+  asyncHandler(subjectControllers.countStudentBySubject)
 );
-router.get("/:id", [apiKeyAuthentication], subjectControllers.information);
+router.get(
+  "/:id",
+  [apiKeyAuthentication],
+  asyncHandler(subjectControllers.information)
+);
 
 module.exports = router;

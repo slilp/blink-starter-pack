@@ -7,31 +7,36 @@ const {
 } = require("../controllers/validator");
 const validate = require("../middlewares/validator");
 const { jwtAuthentication } = require("../middlewares/auth");
+const { asyncHandler } = require("../utils");
 
-router.get("/", [jwtAuthentication], studentControllers.information);
+router.get(
+  "/",
+  [jwtAuthentication],
+  asyncHandler(studentControllers.information)
+);
 router.post(
   "/register",
   studentValidators.registerValidationRules,
   validate,
-  studentControllers.register
+  asyncHandler(studentControllers.register)
 );
 router.post(
   "/login",
   studentValidators.loginValidationRules,
   validate,
-  studentControllers.login
+  asyncHandler(studentControllers.login)
 );
 router.post(
   "/add-subject",
   [jwtAuthentication],
   studentValidators.addSubjectValidationRules,
   validate,
-  studentControllers.addSubject
+  asyncHandler(studentControllers.addSubject)
 );
 router.delete(
   "/delete-subject/:id",
   [jwtAuthentication],
-  studentControllers.deleteSubject
+  asyncHandler(studentControllers.deleteSubject)
 );
 router.delete("/", [jwtAuthentication], studentControllers.delete);
 router.put(
@@ -39,14 +44,14 @@ router.put(
   [jwtAuthentication],
   cardValidators.updateValidationRules,
   validate,
-  cardControllers.update
+  asyncHandler(cardControllers.update)
 );
 router.put(
   "/update-subject",
   [jwtAuthentication],
   studentValidators.updateSubjectValidationRules,
   validate,
-  studentControllers.updateSubject
+  asyncHandler(studentControllers.updateSubject)
 );
 
 module.exports = router;

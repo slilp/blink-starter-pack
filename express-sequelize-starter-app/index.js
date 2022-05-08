@@ -5,7 +5,7 @@ const db = require("./src/models");
 const dotenv = require("dotenv");
 const routes = require("./src/routes");
 const passport = require("./src/middlewares/passport");
-const errorHandler = require("./src/middlewares/error");
+const { errorHandler, logErrors } = require("./src/middlewares/error");
 
 dotenv.config();
 app.use(express.json());
@@ -20,6 +20,7 @@ app.get("/test", (req, res) => {
   res.json({ status: true, message: "your api running success 😃" });
 });
 
+app.use(logErrors);
 app.use(errorHandler);
 
 db.sequelize
