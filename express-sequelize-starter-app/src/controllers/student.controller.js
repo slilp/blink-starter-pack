@@ -72,7 +72,7 @@ module.exports = {
   },
   addSubject: async (req, res) => {
     let result = await studentSubjectServices.create({
-      subject_id: req.body.subjectId,
+      subject_id: +req.body.subjectId,
       student_id: req.user,
     });
     return res.json(result);
@@ -80,9 +80,9 @@ module.exports = {
   updateSubject: async (req, res) => {
     let result = await studentSubjectServices.update(
       req.user,
-      req.body.subjectId,
+      +req.body.subjectId,
       {
-        subject_id: req.body?.newSubjectId,
+        subject_id: +req.body.newSubjectId,
       }
     );
     if (result[0] === 0)
