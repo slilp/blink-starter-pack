@@ -22,7 +22,6 @@ const subjectServices = {
     });
   },
   findByFilter: async ({ nameFilter }, { skip, limit }) => {
-    console.log(nameFilter);
     return await db.Subject.findAndCountAll({
       where: nameFilter
         ? {
