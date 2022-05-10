@@ -11,7 +11,7 @@ module.exports = {
     body("username").isEmail(),
     body("password").notEmpty(),
   ],
-  addSubjectValidationRules: [body("subjectId").isInt()],
+  addSubjectValidationRules: [body("subjectId").notEmpty()],
   updateSubjectValidationRules: [
     body("subjectId").notEmpty(),
     body("newSubjectId").notEmpty(),

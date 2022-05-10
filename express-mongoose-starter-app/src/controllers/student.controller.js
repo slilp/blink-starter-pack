@@ -58,10 +58,8 @@ module.exports = {
     });
   },
   update: async (req, res) => {
-    const countDelete = await studentServices.update(req.user, req.body);
-    if (result[0] === 0)
-      return res.status(404).json({ message: "NOT FOUND DATA" });
-    return res.json({ updatedCount: result[0] });
+    const result = await studentServices.update(req.user, req.body);
+    return res.json(result);
   },
   information: async (req, res) => {
     let userInfo = await studentServices.findById(req.user);
@@ -71,19 +69,11 @@ module.exports = {
     return res.status(404).json({ message: "NOT_FOUND" });
   },
   addSubject: async (req, res) => {
-    let result = await studentServices.addSubject({
-      subject_id: +req.body.subjectId,
-      student_id: req.user,
-    });
+    let result = await studentServices.addSubject(req.user, req.body.subjectId);
     return res.json(result);
   },
   deleteSubject: async (req, res) => {
-    const countDelete = await studentServices.deleteSubject(
-      req.user,
-      req.params.id
-    );
-    return res.json({
-      deleted: countDelete,
-    });
+    const result = await studentServices.deleteSubject(req.user, req.params.id);
+    return res.json(result);
   },
 };

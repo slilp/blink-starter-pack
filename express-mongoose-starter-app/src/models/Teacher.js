@@ -6,6 +6,7 @@ const schema = new Schema(
     firstName: String,
     lastName: String,
     profileImage: String,
+    subject: { type: mongoose.Types.ObjectId, ref: "subject" },
   },
   {
     timestamps: true,

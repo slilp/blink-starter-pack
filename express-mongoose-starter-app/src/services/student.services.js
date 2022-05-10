@@ -1,4 +1,4 @@
-const { studentModel, cardModel } = require("../models");
+const { studentModel, cardModel, subjectModel } = require("../models");
 
 const studentServices = {
   create: async (addModel) => {
@@ -30,12 +30,12 @@ const studentServices = {
     });
   },
   delete: async (id) => {
+    const cardId = await studentModel.findById(id).select({ card: 1 });
+    const session = await studentModel.startSession();
     try {
-      const session = await studentModel.startSession();
       session.startTransaction();
-      const cardId = await studentModel.findById(id).select({ card: 1 });
       const countStudentDelete = await studentModel.deleteMany({ _id: id });
-      const countCardDelete = await cardModel.deleteOne({ _id: cardId });
+      const countCardDelete = await cardModel.deleteOne({ _id: cardId?.card });
       await session.commitTransaction();
       session.endSession();
       return { countStudentDelete, countCardDelete };
@@ -55,16 +55,52 @@ const studentServices = {
     return await studentModel.findOne({ username: _username });
   },
   addSubject: async (studentId, subjectId) => {
-    return await studentModel.findOneAndUpdate(
-      { _id: studentId },
-      { $push: { subjects: subjectId } }
-    );
+    const session = await studentModel.startSession();
+    try {
+      session.startTransaction();
+      await subjectModel.findOneAndUpdate(
+        { _id: subjectId },
+        { $addToSet: { students: studentId } },
+        {
+          new: true,
+        }
+      );
+      const response = await studentModel.findOneAndUpdate(
+        { _id: studentId },
+        { $push: { subjects: subjectId } }
+      );
+      await session.commitTransaction();
+      session.endSession();
+      return response;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
   },
   deleteSubject: async (studentId, subjectId) => {
-    return await studentModel.findOneAndUpdate(
-      { _id: studentId },
-      { $pull: { subjects: subjectId } }
-    );
+    const session = await studentModel.startSession();
+    try {
+      session.startTransaction();
+      await subjectModel.findOneAndUpdate(
+        { _id: subjectId },
+        { $pull: { students: studentId } },
+        {
+          new: true,
+        }
+      );
+      const response = await studentModel.findOneAndUpdate(
+        { _id: studentId },
+        { $pull: { subjects: subjectId } }
+      );
+      await session.commitTransaction();
+      session.endSession();
+      return response;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
   },
   countStudentGroupBySubject: async () => {
     return await studentModel.aggregate([

@@ -19,6 +19,11 @@ router.put(
   asyncHandler(teacherControllers.update)
 );
 router.delete(
+  "/delete-subject/:id",
+  [apiKeyAuthentication],
+  asyncHandler(teacherControllers.deleteSubject)
+);
+router.delete(
   "/:id",
   [apiKeyAuthentication],
   asyncHandler(teacherControllers.delete)

@@ -38,7 +38,11 @@ router.delete(
   [jwtAuthentication],
   asyncHandler(studentControllers.deleteSubject)
 );
-router.delete("/", [jwtAuthentication], studentControllers.delete);
+router.delete(
+  "/",
+  [jwtAuthentication],
+  asyncHandler(studentControllers.delete)
+);
 router.put(
   "/update-card",
   [jwtAuthentication],

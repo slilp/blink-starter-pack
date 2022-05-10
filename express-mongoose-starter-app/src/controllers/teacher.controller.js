@@ -7,9 +7,11 @@ module.exports = {
   },
   update: async (req, res) => {
     const result = await teacherServices.update(req.params.id, req.body);
-    if (result[0] === 0)
-      return res.status(404).json({ message: "NOT FOUND DATA" });
-    return res.json({ updatedCount: result[0] });
+    return res.json(result);
+  },
+  deleteSubject: async (req, res) => {
+    const result = await teacherServices.deleteSubject(req.params.id);
+    return res.json(result);
   },
   delete: async (req, res) => {
     const result = await teacherServices.delete(req.params.id);

@@ -35,7 +35,7 @@ const subjectServices = {
             }
           : {}
       )
-      .sort(["name", 1])
+      .sort([["name", 1]])
       .skip(skip)
       .limit(limit);
   },
