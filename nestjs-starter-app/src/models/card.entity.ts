@@ -50,7 +50,6 @@ export class Card {
   profileImage: string;
 
   @Column({
-    length: 500,
     nullable: true,
   })
   level: number;

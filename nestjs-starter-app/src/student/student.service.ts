@@ -7,18 +7,16 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../models/student.entity';
-import { Card } from '../models/card.entity';
 import { RegisterStudentDto } from './dto/register-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
 import { SubjectService } from 'src/subject/subject.service';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { UpdateSubjectDto } from './dto/update-subject.dto';
 
 @Injectable()
 export class StudentService {
   constructor(
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
-    private cardRepository: Repository<Card>,
     private subjectService: SubjectService,
   ) {}
 
@@ -26,7 +24,7 @@ export class StudentService {
     return await this.studentRepository.find();
   }
 
-  public async findOne(id: string): Promise<Student> {
+  public async findOne(id: string): Promise<Omit<Student, 'password'>> {
     const studentInfo = await this.studentRepository.findOne({
       where: { id: +id },
       relations: ['card', 'subjects'],
@@ -34,6 +32,7 @@ export class StudentService {
     if (!studentInfo) {
       throw new NotFoundException(`Student ${id} not found`);
     }
+    delete studentInfo.password;
     return studentInfo;
   }
 
@@ -78,24 +77,38 @@ export class StudentService {
     return await this.studentRepository.delete(id);
   }
 
-  public async updateSubject(id, updateStudentDto: UpdateStudentDto) {
-    // const subjects = await this.subjectService.findBySubjects(
-    //   updateStudentDto.subjects,
-    // );
-
-    // if (subjects.length !== updateStudentDto.subjects.length) {
-    //   throw new NotFoundException(`Subjects not found`);
-    // }
-    // const studentInfo = await this.studentRepository.findOne({
-    //   where: { id: +id },
-    // });
-    // if (!studentInfo) {
-    //   throw new NotFoundException(`Student ${id} not found`);
-    // }
-    // studentInfo.subjects = subjects;
-    // const updateResult = await this.studentRepository.save(studentInfo);
-    // delete updateResult.password;
-    // return updateResult;
-    return 'true';
+  public async updateSubject(
+    id,
+    updateSubjectDto: UpdateSubjectDto,
+    type: string,
+  ) {
+    if (type === 'delete') {
+      const studentInfo = await this.studentRepository.findOne({
+        where: { id: +id },
+      });
+      if (!studentInfo) {
+        throw new NotFoundException(`Student ${id} not found`);
+      }
+      studentInfo.subjects = studentInfo.subjects.filter(
+        (item) => item.id !== updateSubjectDto.subject,
+      );
+      const updateResult = await this.studentRepository.save(studentInfo);
+      delete updateResult.password;
+      return updateResult;
+    } else {
+      const subject = await this.subjectService.findById(
+        updateSubjectDto.subject,
+      );
+      const studentInfo = await this.studentRepository.findOne({
+        where: { id: +id },
+      });
+      if (!studentInfo) {
+        throw new NotFoundException(`Student ${id} not found`);
+      }
+      studentInfo.subjects = [...studentInfo.subjects, subject];
+      const updateResult = await this.studentRepository.save(studentInfo);
+      delete updateResult.password;
+      return updateResult;
+    }
   }
 }

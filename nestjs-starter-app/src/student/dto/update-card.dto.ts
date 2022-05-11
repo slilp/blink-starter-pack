@@ -2,6 +2,10 @@ import { IsOptional, MaxLength, IsInt } from 'class-validator';
 import { Gender } from 'src/models/card.entity';
 
 export class UpdateCardDto {
+  @MaxLength(20)
+  @IsOptional()
+  cardNo: string;
+
   @MaxLength(150)
   @IsOptional()
   firstName: string;

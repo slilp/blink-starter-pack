@@ -19,7 +19,7 @@ export class ApiKeyGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest<Request>();
-    const authHeader = request.header('Authorization');
+    const authHeader = request.header('Api-Key');
     return authHeader === PRIVATE_KEY;
   }
 }

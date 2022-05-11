@@ -33,6 +33,6 @@ export class Teacher {
   @ManyToOne(() => Subject, (subject) => subject.teachers, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'teacherId' })
+  @JoinColumn({ name: 'subjectId' })
   subject: Subject;
 }
