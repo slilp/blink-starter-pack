@@ -23,34 +23,35 @@ export class TeacherService {
     const { limit, offset, search } = searchQuery;
     const [list, count] = await Promise.all([
       this.teacherRepository.find({
-        // where: [
-        //   search
-        //     ? {
-        //         fisrtName: Like(`%${search} #%`),
-        //       }
-        //     : {},
-        //   search
-        //     ? {
-        //         lastName: Like(`%${search} #%`),
-        //       }
-        //     : {},
-        // ],
+        where: [
+          search
+            ? {
+                firstName: Like(`%${search}%`),
+              }
+            : {},
+          search
+            ? {
+                lastName: Like(`%${search}%`),
+              }
+            : {},
+        ],
+        relations: ['subject'],
         skip: offset,
         take: limit,
       }),
       this.teacherRepository.count({
-        // where: [
-        //   search
-        //     ? {
-        //         fisrtName: Like(`%${search} #%`),
-        //       }
-        //     : {},
-        //   search
-        //     ? {
-        //         lastName: Like(`%${search} #%`),
-        //       }
-        //     : {},
-        // ],
+        where: [
+          search
+            ? {
+                firstName: Like(`%${search}%`),
+              }
+            : {},
+          search
+            ? {
+                lastName: Like(`%${search}%`),
+              }
+            : {},
+        ],
       }),
     ]);
     return { data: list, totalRecord: count };

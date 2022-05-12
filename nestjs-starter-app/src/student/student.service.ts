@@ -36,7 +36,9 @@ export class StudentService {
     return studentInfo;
   }
 
-  public async create(createStudentDto: RegisterStudentDto): Promise<Student> {
+  public async create(
+    createStudentDto: RegisterStudentDto,
+  ): Promise<Omit<Student, 'password'>> {
     const studentInfo = await this.studentRepository.findOne({
       where: { username: createStudentDto.username },
     });
@@ -48,13 +50,16 @@ export class StudentService {
     const hash = await bcrypt.hash(createStudentDto.password, 10);
     createStudentDto.password = hash;
 
-    return await this.studentRepository.save({
+    const result = await this.studentRepository.save({
       ...createStudentDto,
       card: {
         firstName: createStudentDto.firstName,
         lastName: createStudentDto.lastName,
       },
     });
+
+    delete result.password;
+    return result;
   }
 
   public async update(
@@ -85,6 +90,7 @@ export class StudentService {
     if (type === 'delete') {
       const studentInfo = await this.studentRepository.findOne({
         where: { id: +id },
+        relations: ['subjects'],
       });
       if (!studentInfo) {
         throw new NotFoundException(`Student ${id} not found`);
@@ -101,6 +107,7 @@ export class StudentService {
       );
       const studentInfo = await this.studentRepository.findOne({
         where: { id: +id },
+        relations: ['subjects'],
       });
       if (!studentInfo) {
         throw new NotFoundException(`Student ${id} not found`);

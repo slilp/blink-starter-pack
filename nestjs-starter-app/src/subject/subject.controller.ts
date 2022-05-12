@@ -7,14 +7,17 @@ import {
   Body,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { SearchSubjectDto } from './dto/search-subject.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 
 @ApiTags('subject')
+@UseGuards(ApiKeyGuard)
 @Controller('api/subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
@@ -27,6 +30,11 @@ export class SubjectController {
   @Get()
   findAll(@Query() searchQuery: SearchSubjectDto) {
     return this.subjectService.findAll(searchQuery);
+  }
+
+  @Get('count-student')
+  countStudentBySubject() {
+    return this.subjectService.countStudent();
   }
 
   @Get(':id')

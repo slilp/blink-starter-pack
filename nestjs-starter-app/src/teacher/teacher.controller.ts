@@ -29,14 +29,14 @@ export class TeacherController {
     return this.teacherService.create(createTeacherDto);
   }
 
-  @Get()
-  findAll(@Query() searchQuery: SearchTeacherDto) {
-    return this.teacherService.findAll(searchQuery);
-  }
-
   @Get('count-teacher')
   countTeacher() {
     return this.teacherService.countTeacher();
+  }
+
+  @Get('search')
+  findAll(@Query() searchQuery: SearchTeacherDto) {
+    return this.teacherService.findAll(searchQuery);
   }
 
   @Get(':id')

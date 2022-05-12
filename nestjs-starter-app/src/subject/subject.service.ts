@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Subject } from 'src/models/subject.entity';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
@@ -16,6 +16,7 @@ export class SubjectService {
   constructor(
     @InjectRepository(Subject)
     private subjectRepository: Repository<Subject>,
+    private connection: Connection,
   ) {}
 
   public async findAll(
@@ -26,17 +27,16 @@ export class SubjectService {
       this.subjectRepository.find({
         where: search
           ? {
-              name: Like(`%${search} #%`),
+              name: Like(`%${search}%`),
             }
           : {},
-
         skip: offset,
         take: limit,
       }),
       this.subjectRepository.count({
         where: search
           ? {
-              name: Like(`%${search} #%`),
+              name: Like(`%${search}%`),
             }
           : {},
       }),
@@ -88,5 +88,16 @@ export class SubjectService {
 
   public async remove(id: string) {
     return await this.subjectRepository.delete(id);
+  }
+
+  public async countStudent(): Promise<any> {
+    return await this.subjectRepository
+      .createQueryBuilder('subject')
+      .leftJoinAndSelect('subject.students', 'students')
+      .groupBy('subject.id')
+      .select(
+        'COUNT(students.id) AS countStudent , subject.name as subjectName',
+      )
+      .getRawMany();
   }
 }
